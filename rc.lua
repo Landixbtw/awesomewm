@@ -2,6 +2,7 @@
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, "luarocks.loader")
 
+
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -17,6 +18,11 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
+
+-- battery-widget module:
+-- https://www.github.com/deficient/batterywidget.git
+--
+local battery_widget = require("battery-widget")
 
 -- xrandr for monitor layout
 local xrandr = require("xrandr")
@@ -55,6 +61,9 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(gears.filesystem.get_themes_dir() .. "zenburn/theme.lua")
+local theme = beautiful.get()
+theme.font = "JetBrainsMonoNerdFont-Regular 10"
+beautiful.init(theme)
 
 -- This is used later as the default terminal and editor to run.
 
@@ -246,6 +255,25 @@ awful.screen.connect_for_each_screen(function(s)
 			layout = wibox.layout.fixed.horizontal,
 			-- mykeyboardlayout,
 			-- wibox.widget.systray(),
+			battery_widget {
+				ac = "AC",
+				adapter = "BAT0",
+				ac_prefix = "🔌", 
+				battery_prefix = "🔋: ",
+				percent_colors = {
+					{ 25, "red" },
+					{ 50, "orange" },
+					{ 999, "green" },
+				},
+				listen = true,
+				timeout = 10,
+				widget_text = "${AC_BAT}${color_on}${percent}%${color_off}",
+			alert_threshhold = 5,
+			alert_timeout = 0,
+			alert_title = "Akkustand niedrig !",
+			alert_text = "${AC_BAT}${time_est}",
+			warn_full_battery = true,
+			},
 			mytextclock,
 			-- s.mylayoutbox,
 		},
